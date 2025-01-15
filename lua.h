@@ -336,8 +336,8 @@ LUA_API void (lua_warning)  (lua_State *L, const char *msg, int tocont);
 #define LUA_GCSETPAUSE		6
 #define LUA_GCSETSTEPMUL	7
 #define LUA_GCISRUNNING		9
-#define LUA_GCGEN		10
-#define LUA_GCINC		11
+#define LUA_GCGEN		10  // 分代垃圾回收
+#define LUA_GCINC		11  // 增量垃圾回收
 
 LUA_API int (lua_gc) (lua_State *L, int what, ...);
 

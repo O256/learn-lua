@@ -61,8 +61,8 @@ typedef struct BlockCnt {
 /*
 ** prototypes for recursive non-terminal functions
 */
-static void statement (LexState *ls);
-static void expr (LexState *ls, expdesc *v);
+static void statement (LexState *ls);  /* 语句 */
+static void expr (LexState *ls, expdesc *v);  /* 表达式 */
 
 
 static l_noret error_expected (LexState *ls, int token) {
@@ -1842,8 +1842,9 @@ static void retstat (LexState *ls) {
 }
 
 
+// 语句
 static void statement (LexState *ls) {
-  int line = ls->linenumber;  /* may be needed for error messages */
+  int line = ls->linenumber;  /* 可能需要用于错误消息 */
   enterlevel(ls);
   switch (ls->t.token) {
     case ';': {  /* stat -> ';' (empty statement) */
@@ -1938,7 +1939,7 @@ static void mainfunc (LexState *ls, FuncState *fs) {
   close_func(ls);
 }
 
-
+// 解析器
 LClosure *luaY_parser (lua_State *L, ZIO *z, Mbuffer *buff,
                        Dyndata *dyd, const char *name, int firstchar) {
   LexState lexstate;

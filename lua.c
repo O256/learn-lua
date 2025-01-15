@@ -370,10 +370,10 @@ static int runargs (lua_State *L, char **argv, int n) {
   return 1;
 }
 
-
+// 处理LUA_INITVARVERSION和LUA_INIT_VAR
 static int handle_luainit (lua_State *L) {
-  const char *name = "=" LUA_INITVARVERSION;
-  const char *init = getenv(name + 1);
+  const char *name = "=" LUA_INITVARVERSION; // 环境变量名称
+  const char *init = getenv(name + 1);  // 获取环境变量
   if (init == NULL) {
     name = "=" LUA_INIT_VAR;
     init = getenv(name + 1);  /* try alternative name */
@@ -619,14 +619,14 @@ static void doREPL (lua_State *L) {
 
 
 /*
-** Main body of stand-alone interpreter (to be called in protected mode).
-** Reads the options and handles them all.
+** 主函数，用于解释器（在受保护模式下调用）。
+** 读取选项并处理它们。
 */
 static int pmain (lua_State *L) {
   int argc = (int)lua_tointeger(L, 1);
   char **argv = (char **)lua_touserdata(L, 2);
   int script;
-  int args = collectargs(argv, &script);
+  int args = collectargs(argv, &script);  // 收集参数
   int optlim = (script > 0) ? script : argc; /* first argv not an option */
   luaL_checkversion(L);  /* check that interpreter has correct version */
   if (args == has_error) {  /* bad arg? */
@@ -665,7 +665,6 @@ static int pmain (lua_State *L) {
   lua_pushboolean(L, 1);  /* signal no errors */
   return 1;
 }
-
 
 int main (int argc, char **argv) {
   int status, result;

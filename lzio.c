@@ -1,6 +1,6 @@
 /*
 ** $Id: lzio.c $
-** Buffered streams
+** 带缓冲的流
 ** See Copyright Notice in lua.h
 */
 
@@ -20,6 +20,7 @@
 #include "lzio.h"
 
 
+// 填充缓冲区
 int luaZ_fill (ZIO *z) {
   size_t size;
   lua_State *L = z->L;

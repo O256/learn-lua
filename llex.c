@@ -1,6 +1,6 @@
 /*
 ** $Id: llex.c $
-** Lexical Analyzer
+** 词法分析器
 ** See Copyright Notice in lua.h
 */
 
@@ -33,9 +33,11 @@
 
 
 
-#define currIsNewline(ls)	(ls->current == '\n' || ls->current == '\r')
+// 判断当前字符是否为换行符
+#define currIsNewline(ls)	(ls->current == '\n' || ls->current == '\r') 
 
 
+// 保留字
 /* ORDER RESERVED */
 static const char *const luaX_tokens [] = {
     "and", "break", "do", "else", "elseif",
@@ -48,12 +50,15 @@ static const char *const luaX_tokens [] = {
 };
 
 
+// 保存当前字符并读取下一个字符
 #define save_and_next(ls) (save(ls, ls->current), next(ls))
 
 
+// 词法分析器错误处理
 static l_noret lexerror (LexState *ls, const char *msg, int token);
 
 
+// 保存当前字符
 static void save (LexState *ls, int c) {
   Mbuffer *b = ls->buff;
   if (luaZ_bufflen(b) + 1 > luaZ_sizebuffer(b)) {
