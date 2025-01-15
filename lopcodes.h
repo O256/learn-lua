@@ -11,11 +11,12 @@
 
 
 /*===========================================================================
-  We assume that instructions are unsigned 32-bit integers.
-  All instructions have an opcode in the first 7 bits.
-  Instructions can have the following formats:
+  我们假设指令是 32 位无符号整数。
+  所有指令都有一个 7 位的操作码。
+  指令可以有以下格式：
 
-        3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0
+  下面两行用来表示32位指令的格式，第一行是十位，第二行是个位
+        3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 
         1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
 iABC          C(8)     |      B(8)     |k|     A(8)      |   Op(7)     |
 iABx                Bx(17)               |     A(8)      |   Op(7)     |
@@ -23,9 +24,8 @@ iAsBx              sBx (signed)(17)      |     A(8)      |   Op(7)     |
 iAx                           Ax(25)                     |   Op(7)     |
 isJ                           sJ (signed)(25)            |   Op(7)     |
 
-  A signed argument is represented in excess K: the represented value is
-  the written unsigned value minus K, where K is half the maximum for the
-  corresponding unsigned argument.
+  一个有符号的参数在 excess K 中表示：表示的值是
+  写入的无符号值减去 K，其中 K 是相应无符号参数的一半的最大值。
 ===========================================================================*/
 
 
@@ -33,7 +33,7 @@ enum OpMode {iABC, iABx, iAsBx, iAx, isJ};  /* basic instruction formats */
 
 
 /*
-** size and position of opcode arguments.
+** 操作码参数的大小和位置。
 */
 #define SIZE_C		8
 #define SIZE_B		8
@@ -59,12 +59,12 @@ enum OpMode {iABC, iABx, iAsBx, iAx, isJ};  /* basic instruction formats */
 
 
 /*
-** limits for opcode arguments.
-** we use (signed) 'int' to manipulate most arguments,
-** so they must fit in ints.
+** 操作码参数的限制。
+** 我们使用（有符号）'int' 来操作大多数参数，
+** 所以它们必须适合 int。
 */
 
-/* Check whether type 'int' has at least 'b' bits ('b' < 32) */
+/* 检查类型 'int' 是否至少有 'b' 位 ('b' < 32) */
 #define L_INTHASBITS(b)		((UINT_MAX >> ((b) - 1)) >= 1)
 
 
@@ -101,14 +101,14 @@ enum OpMode {iABC, iABx, iAsBx, iAx, isJ};  /* basic instruction formats */
 #define sC2int(i)	((i) - OFFSET_sC)
 
 
-/* creates a mask with 'n' 1 bits at position 'p' */
+/* 创建一个掩码，其中包含 'n' 个 1 位，位置为 'p' */
 #define MASK1(n,p)	((~((~(Instruction)0)<<(n)))<<(p))
 
-/* creates a mask with 'n' 0 bits at position 'p' */
+/* 创建一个掩码，其中包含 'n' 个 0 位，位置为 'p' */
 #define MASK0(n,p)	(~MASK1(n,p))
 
 /*
-** the following macros help to manipulate instructions
+** 以下宏有助于操作指令
 */
 
 #define GET_OPCODE(i)	(cast(OpCode, ((i)>>POS_OP) & MASK1(SIZE_OP,0)))
@@ -177,21 +177,21 @@ enum OpMode {iABC, iABx, iAsBx, iAx, isJ};  /* basic instruction formats */
 
 
 /*
-** invalid register that fits in 8 bits
+** 无效的寄存器，适合 8 位
 */
 #define NO_REG		MAXARG_A
 
 
 /*
-** R[x] - register
-** K[x] - constant (in constant table)
-** RK(x) == if k(i) then K[x] else R[x]
+** R[x] - 寄存器
+** K[x] - 常量（在常量表中）
+** RK(x) == if k(i) then K[x] else R[x] 如果 i 是 1 则返回 K[x] 否则返回 R[x]，该宏用于在常量表中查找常量或寄存器
 */
 
 
 /*
-** Grep "ORDER OP" if you change these enums. Opcodes marked with a (*)
-** has extra descriptions in the notes after the enumeration.
+** 如果更改这些枚举，请搜索“ORDER OP”。带有 (*) 的指令有额外的描述
+** 在枚举之后的注释中。
 */
 
 typedef enum {
@@ -315,67 +315,48 @@ OP_EXTRAARG/*	Ax	extra (larger) argument for previous opcode	*/
 
 
 /*===========================================================================
-  Notes:
+  注释：
 
-  (*) Opcode OP_LFALSESKIP is used to convert a condition to a boolean
-  value, in a code equivalent to (not cond ? false : true).  (It
-  produces false and skips the next instruction producing true.)
+  (*) 操作码 OP_LFALSESKIP 用于将条件转换为布尔值，在代码中相当于 (not cond ? false : true)。
+  （它产生 false 并跳过下一个指令产生 true。）
 
-  (*) Opcodes OP_MMBIN and variants follow each arithmetic and
-  bitwise opcode. If the operation succeeds, it skips this next
-  opcode. Otherwise, this opcode calls the corresponding metamethod.
+  (*) 操作码 OP_MMBIN 和变体跟随每个算术和位运算操作码。如果操作成功，它跳过下一个操作码。否则，此操作码调用相应的元方法。
 
-  (*) Opcode OP_TESTSET is used in short-circuit expressions that need
-  both to jump and to produce a value, such as (a = b or c).
+  (*) 操作码 OP_TESTSET 用于短路表达式，需要跳转和产生值，例如 (a = b or c)。
 
-  (*) In OP_CALL, if (B == 0) then B = top - A. If (C == 0), then
-  'top' is set to last_result+1, so next open instruction (OP_CALL,
-  OP_RETURN*, OP_SETLIST) may use 'top'.
+  (*) 在 OP_CALL 中，如果 (B == 0) 则 B = top - A。如果 (C == 0)，则 'top' 设置为 last_result+1，所以下一个打开的指令（OP_CALL, OP_RETURN*, OP_SETLIST）可以使用 'top'。
 
-  (*) In OP_VARARG, if (C == 0) then use actual number of varargs and
-  set top (like in OP_CALL with C == 0).
+  (*) 在 OP_VARARG 中，如果 (C == 0) 则使用实际的 varargs 数量并设置 top（类似于 OP_CALL 中的 C == 0）。
 
-  (*) In OP_RETURN, if (B == 0) then return up to 'top'.
+  (*) 在 OP_RETURN 中，如果 (B == 0) 则返回 up to 'top'。
 
-  (*) In OP_LOADKX and OP_NEWTABLE, the next instruction is always
-  OP_EXTRAARG.
+  (*) 在 OP_LOADKX 和 OP_NEWTABLE 中，下一个指令总是 OP_EXTRAARG。
 
-  (*) In OP_SETLIST, if (B == 0) then real B = 'top'; if k, then
-  real C = EXTRAARG _ C (the bits of EXTRAARG concatenated with the
-  bits of C).
+  (*) 在 OP_SETLIST 中，如果 (B == 0) 则 real B = 'top'; 如果 k, 则 real C = EXTRAARG _ C (EXTRAARG 的位与 C 的位连接)。
 
-  (*) In OP_NEWTABLE, B is log2 of the hash size (which is always a
-  power of 2) plus 1, or zero for size zero. If not k, the array size
-  is C. Otherwise, the array size is EXTRAARG _ C.
+  (*) 在 OP_NEWTABLE 中，B 是 hash 大小（总是 2 的幂）加 1，或零表示大小为零。如果 k, 则 array size 是 C。否则，array size 是 EXTRAARG _ C。
 
-  (*) For comparisons, k specifies what condition the test should accept
-  (true or false).
+  (*) 对于比较，k 指定测试应接受的什么条件（true 或 false）。
 
-  (*) In OP_MMBINI/OP_MMBINK, k means the arguments were flipped
-   (the constant is the first operand).
+  (*) 在 OP_MMBINI/OP_MMBINK 中，k 表示参数被翻转（常量是第一个操作数）。
 
-  (*) All 'skips' (pc++) assume that next instruction is a jump.
+  (*) 所有 'skips' (pc++) 假设下一个指令是跳转。
 
-  (*) In instructions OP_RETURN/OP_TAILCALL, 'k' specifies that the
-  function builds upvalues, which may need to be closed. C > 0 means
-  the function is vararg, so that its 'func' must be corrected before
-  returning; in this case, (C - 1) is its number of fixed parameters.
+  (*) 在 OP_RETURN/OP_TAILCALL 中，'k' 指定函数构建 upvalues，这些 upvalues 可能需要关闭。C > 0 表示函数是 vararg，所以它的 'func' 必须在返回之前正确；在这种情况下，(C - 1) 是它的固定参数数量。
 
-  (*) In comparisons with an immediate operand, C signals whether the
-  original operand was a float. (It must be corrected in case of
-  metamethods.)
+  (*) 在比较立即操作数时，C 表示原始操作数是否为浮点数。（在元方法的情况下必须纠正）
 
 ===========================================================================*/
 
 
 /*
-** masks for instruction properties. The format is:
-** bits 0-2: op mode
-** bit 3: instruction set register A
-** bit 4: operator is a test (next instruction must be a jump)
-** bit 5: instruction uses 'L->top' set by previous instruction (when B == 0)
-** bit 6: instruction sets 'L->top' for next instruction (when C == 0)
-** bit 7: instruction is an MM instruction (call a metamethod)
+** 指令属性的掩码。格式如下：
+** 位 0-2：操作模式
+** 位 3：指令设置寄存器 A
+** 位 4：操作是测试（下一个指令必须是跳转）
+** 位 5：指令使用 'L->top' 由前一个指令设置（当 B == 0 时）
+** 位 6：指令设置 'L->top' 给下一个指令（当 C == 0 时）
+** 位 7：指令是 MM 指令（调用元方法）
 */
 
 LUAI_DDEC(const lu_byte luaP_opmodes[NUM_OPCODES];)
@@ -396,10 +377,9 @@ LUAI_DDEC(const lu_byte luaP_opmodes[NUM_OPCODES];)
 #define isIT(i)		(testITMode(GET_OPCODE(i)) && GETARG_B(i) == 0)
 
 #define opmode(mm,ot,it,t,a,m)  \
-    (((mm) << 7) | ((ot) << 6) | ((it) << 5) | ((t) << 4) | ((a) << 3) | (m))
+    (((mm) << 7) | ((ot) << 6) | ((it) << 5) | ((t) << 4) | ((a) << 3) | (m)) 
 
-
-/* number of list items to accumulate before a SETLIST instruction */
+/* 在 SETLIST 指令之前累积的列表项数量 */
 #define LFIELDS_PER_FLUSH	50
 
 #endif
