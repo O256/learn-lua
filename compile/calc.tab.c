@@ -1118,7 +1118,7 @@ yyreduce:
   case 3: /* calclist: calclist exp EOL  */
 #line 15 "calc.y"
                        { 
-        print_node("calclist -> exp EOL", 0);
+        print_node("calclist -> exp EOL", 0, yyvsp[-1]);
         printf("= %d\n> ", yyvsp[-1]); 
     }
 #line 1125 "calc.tab.c"
@@ -1127,7 +1127,7 @@ yyreduce:
   case 4: /* calclist: calclist EOL  */
 #line 19 "calc.y"
                    { 
-        print_node("calclist -> EOL", 0);
+        print_node("calclist -> EOL", 0, 0);
         printf("> "); 
     }
 #line 1134 "calc.tab.c"
@@ -1136,7 +1136,7 @@ yyreduce:
   case 5: /* exp: factor  */
 #line 26 "calc.y"
            { 
-        print_node("exp -> factor", 1);
+        print_node("exp -> factor", 1, yyvsp[0]);
         yyval = yyvsp[0]; 
     }
 #line 1143 "calc.tab.c"
@@ -1145,7 +1145,7 @@ yyreduce:
   case 6: /* exp: exp ADD exp  */
 #line 30 "calc.y"
                   { 
-        print_node("exp -> exp ADD exp", 1);
+        print_node("exp -> exp ADD exp", 1, yyvsp[-2] + yyvsp[0]);
         yyval = yyvsp[-2] + yyvsp[0]; 
     }
 #line 1152 "calc.tab.c"
@@ -1154,7 +1154,7 @@ yyreduce:
   case 7: /* exp: exp SUB factor  */
 #line 34 "calc.y"
                      { 
-        print_node("exp -> exp SUB factor", 1);
+        print_node("exp -> exp SUB factor", 1, yyvsp[-2] - yyvsp[0]);
         yyval = yyvsp[-2] - yyvsp[0]; 
     }
 #line 1161 "calc.tab.c"
@@ -1163,7 +1163,7 @@ yyreduce:
   case 8: /* exp: exp ABS factor  */
 #line 38 "calc.y"
                      { 
-        print_node("exp -> exp ABS factor", 1);
+        print_node("exp -> exp ABS factor", 1, yyvsp[-2] | yyvsp[0]);
         yyval = yyvsp[-2] | yyvsp[0]; 
     }
 #line 1170 "calc.tab.c"
@@ -1172,7 +1172,7 @@ yyreduce:
   case 9: /* factor: term  */
 #line 45 "calc.y"
          { 
-        print_node("factor -> term", 2);
+        print_node("factor -> term", 2, yyvsp[0]);
         yyval = yyvsp[0]; 
     }
 #line 1179 "calc.tab.c"
@@ -1181,7 +1181,7 @@ yyreduce:
   case 10: /* factor: factor MUL term  */
 #line 49 "calc.y"
                       { 
-        print_node("factor -> factor MUL term", 2);
+        print_node("factor -> factor MUL term", 2, yyvsp[-2] * yyvsp[0]);
         yyval = yyvsp[-2] * yyvsp[0]; 
     }
 #line 1188 "calc.tab.c"
@@ -1190,7 +1190,7 @@ yyreduce:
   case 11: /* factor: factor DIV term  */
 #line 53 "calc.y"
                       { 
-        print_node("factor -> factor DIV term", 2);
+        print_node("factor -> factor DIV term", 2, yyvsp[-2] / yyvsp[0]);
         yyval = yyvsp[-2] / yyvsp[0]; 
     }
 #line 1197 "calc.tab.c"
@@ -1199,7 +1199,7 @@ yyreduce:
   case 12: /* term: NUMBER  */
 #line 60 "calc.y"
            { 
-        print_node("term -> NUMBER", 3);
+        print_node("term -> NUMBER", 3, yyvsp[0]);
         yyval = yyvsp[0]; 
     }
 #line 1206 "calc.tab.c"
@@ -1208,7 +1208,7 @@ yyreduce:
   case 13: /* term: ABS term  */
 #line 64 "calc.y"
                { 
-        print_node("term -> ABS term", 3);
+        print_node("term -> ABS term", 3, yyvsp[0] >= 0 ? yyvsp[0] : -yyvsp[0]);
         yyval = yyvsp[0] >= 0 ? yyvsp[0] : -yyvsp[0]; 
     }
 #line 1215 "calc.tab.c"
@@ -1217,7 +1217,7 @@ yyreduce:
   case 14: /* term: OP exp CP  */
 #line 68 "calc.y"
                 { 
-        print_node("term -> OP exp CP", 3);
+        print_node("term -> OP exp CP", 3, yyvsp[-1]);
         yyval = yyvsp[-1]; 
     }
 #line 1224 "calc.tab.c"
@@ -1432,13 +1432,10 @@ void yyerror(const char *s)
 }
 
 // 定义一个函数来打印节点信息
-void print_node(const char* rule_name, int depth) {
+void print_node(const char* rule_name, int depth, int value) {
     for (int i = 0; i < depth; ++i) {
         printf("  "); // 缩进
     }
-    printf("%s\n", rule_name);
+    printf("%s, value: %d\n", rule_name, value);
 }
 
-%left ADD SUB
-%left MUL DIV
-%left ABS

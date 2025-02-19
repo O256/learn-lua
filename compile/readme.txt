@@ -15,8 +15,8 @@ gcc lex.yy.c calc.tab.c -o calc
 
 # 运行可执行文件
 ./calc
-> 3.14 * (x + 5)
-= 17.7
+> 3 * (1 + 5)
+= 18
 > 
 
 
@@ -26,3 +26,6 @@ bison -v calc.y
 
 bison采用LALR(1)分析方法，其中LALR(1)分析法是LA(1)LR(0)分析法的改进;
 shift表示移入，reduce表示规约，accept表示接受，error表示错误;
+
+
+3 * (1 + 5 + 2 * 2)
