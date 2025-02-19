@@ -23,3 +23,6 @@ gcc lex.yy.c calc.tab.c -o calc
 # 生成
 bison -v calc.y
 
+
+bison采用LALR(1)分析方法，其中LALR(1)分析法是LA(1)LR(0)分析法的改进;
+shift表示移入，reduce表示规约，accept表示接受，error表示错误;
