@@ -96,7 +96,50 @@
 #  endif
 # endif
 
-#include "calc.tab.h"
+
+/* Debug traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int yydebug;
+#endif
+
+/* Token kinds.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+  enum yytokentype
+  {
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    NUMBER = 258,                  /* NUMBER  */
+    ADD = 259,                     /* ADD  */
+    SUB = 260,                     /* SUB  */
+    MUL = 261,                     /* MUL  */
+    DIV = 262,                     /* DIV  */
+    ABS = 263,                     /* ABS  */
+    OP = 264,                      /* OP  */
+    CP = 265,                      /* CP  */
+    EOL = 266                      /* EOL  */
+  };
+  typedef enum yytokentype yytoken_kind_t;
+#endif
+
+/* Value type.  */
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+typedef int YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
+#endif
+
+
+extern YYSTYPE yylval;
+
+int yyparse (void);
+
+
 /* Symbol kind.  */
 enum yysymbol_kind_t
 {
@@ -486,8 +529,8 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    14,    14,    15,    16,    19,    20,    21,    22,    25,
-      26,    27,    30,    31,    32
+       0,    14,    14,    15,    19,    26,    30,    34,    38,    45,
+      49,    53,    60,    64,    68
 };
 #endif
 
@@ -1074,60 +1117,114 @@ yyreduce:
     {
   case 3: /* calclist: calclist exp EOL  */
 #line 15 "calc.y"
-                       { printf("= %d\n> ", yyvsp[-1]); }
-#line 1079 "calc.tab.c"
+                       { 
+        print_node("calclist -> exp EOL", 0);
+        printf("= %d\n> ", yyvsp[-1]); 
+    }
+#line 1125 "calc.tab.c"
     break;
 
   case 4: /* calclist: calclist EOL  */
-#line 16 "calc.y"
-                   { printf("> "); }
-#line 1085 "calc.tab.c"
+#line 19 "calc.y"
+                   { 
+        print_node("calclist -> EOL", 0);
+        printf("> "); 
+    }
+#line 1134 "calc.tab.c"
+    break;
+
+  case 5: /* exp: factor  */
+#line 26 "calc.y"
+           { 
+        print_node("exp -> factor", 1);
+        yyval = yyvsp[0]; 
+    }
+#line 1143 "calc.tab.c"
     break;
 
   case 6: /* exp: exp ADD exp  */
-#line 20 "calc.y"
-                  { yyval = yyvsp[-2] + yyvsp[0]; }
-#line 1091 "calc.tab.c"
+#line 30 "calc.y"
+                  { 
+        print_node("exp -> exp ADD exp", 1);
+        yyval = yyvsp[-2] + yyvsp[0]; 
+    }
+#line 1152 "calc.tab.c"
     break;
 
   case 7: /* exp: exp SUB factor  */
-#line 21 "calc.y"
-                     { yyval = yyvsp[-2] - yyvsp[0]; }
-#line 1097 "calc.tab.c"
+#line 34 "calc.y"
+                     { 
+        print_node("exp -> exp SUB factor", 1);
+        yyval = yyvsp[-2] - yyvsp[0]; 
+    }
+#line 1161 "calc.tab.c"
     break;
 
   case 8: /* exp: exp ABS factor  */
-#line 22 "calc.y"
-                     { yyval = yyvsp[-2] | yyvsp[0]; }
-#line 1103 "calc.tab.c"
+#line 38 "calc.y"
+                     { 
+        print_node("exp -> exp ABS factor", 1);
+        yyval = yyvsp[-2] | yyvsp[0]; 
+    }
+#line 1170 "calc.tab.c"
+    break;
+
+  case 9: /* factor: term  */
+#line 45 "calc.y"
+         { 
+        print_node("factor -> term", 2);
+        yyval = yyvsp[0]; 
+    }
+#line 1179 "calc.tab.c"
     break;
 
   case 10: /* factor: factor MUL term  */
-#line 26 "calc.y"
-                      { yyval = yyvsp[-2] * yyvsp[0]; }
-#line 1109 "calc.tab.c"
+#line 49 "calc.y"
+                      { 
+        print_node("factor -> factor MUL term", 2);
+        yyval = yyvsp[-2] * yyvsp[0]; 
+    }
+#line 1188 "calc.tab.c"
     break;
 
   case 11: /* factor: factor DIV term  */
-#line 27 "calc.y"
-                      { yyval = yyvsp[-2] / yyvsp[0]; }
-#line 1115 "calc.tab.c"
+#line 53 "calc.y"
+                      { 
+        print_node("factor -> factor DIV term", 2);
+        yyval = yyvsp[-2] / yyvsp[0]; 
+    }
+#line 1197 "calc.tab.c"
+    break;
+
+  case 12: /* term: NUMBER  */
+#line 60 "calc.y"
+           { 
+        print_node("term -> NUMBER", 3);
+        yyval = yyvsp[0]; 
+    }
+#line 1206 "calc.tab.c"
     break;
 
   case 13: /* term: ABS term  */
-#line 31 "calc.y"
-               { yyval = yyvsp[0] >= 0? yyvsp[0] : - yyvsp[0]; }
-#line 1121 "calc.tab.c"
+#line 64 "calc.y"
+               { 
+        print_node("term -> ABS term", 3);
+        yyval = yyvsp[0] >= 0 ? yyvsp[0] : -yyvsp[0]; 
+    }
+#line 1215 "calc.tab.c"
     break;
 
   case 14: /* term: OP exp CP  */
-#line 32 "calc.y"
-                { yyval = yyvsp[-1]; }
-#line 1127 "calc.tab.c"
+#line 68 "calc.y"
+                { 
+        print_node("term -> OP exp CP", 3);
+        yyval = yyvsp[-1]; 
+    }
+#line 1224 "calc.tab.c"
     break;
 
 
-#line 1131 "calc.tab.c"
+#line 1228 "calc.tab.c"
 
       default: break;
     }
@@ -1321,7 +1418,7 @@ yyreturn:
   return yyresult;
 }
 
-#line 35 "calc.y"
+#line 74 "calc.y"
 
 int main()
 {
@@ -1333,3 +1430,15 @@ void yyerror(const char *s)
 {
   fprintf(stderr, "error: %s\n", s);
 }
+
+// 定义一个函数来打印节点信息
+void print_node(const char* rule_name, int depth) {
+    for (int i = 0; i < depth; ++i) {
+        printf("  "); // 缩进
+    }
+    printf("%s\n", rule_name);
+}
+
+%left ADD SUB
+%left MUL DIV
+%left ABS

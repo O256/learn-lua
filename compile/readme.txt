@@ -11,11 +11,15 @@ bison -d calc.y
 flex calc.l 
 
 # 生成可执行文件
-gcc lex.yy.c y.tab.c -o calc
+gcc lex.yy.c calc.tab.c -o calc
 
 # 运行可执行文件
 ./calc
 > 3.14 * (x + 5)
 = 17.7
 > 
+
+
+# 生成
+bison -v calc.y
 
