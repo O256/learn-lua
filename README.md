@@ -1,7 +1,15 @@
-# Lua
+# 简介
 
-This is the repository of Lua development code, as seen by the Lua team. It contains the full history of all commits but is mirrored irregularly. For complete information about Lua, visit [Lua.org](https://www.lua.org/).
+该仓库主要用于学习Lua源码，为 Lua 5.4.5 版本。
 
-Please **do not** send pull requests. To report issues, post a message to the [Lua mailing list](https://www.lua.org/lua-l.html).
+# 词法分析
 
-Download official Lua releases from [Lua.org](https://www.lua.org/download.html).
+文件：llex.c
+
+采用 基于状态机的手工编码 实现词法分析。
+
+# 语法分析
+
+文件：lparser.c
+
+采用 递归下降分析 实现语法分析。
