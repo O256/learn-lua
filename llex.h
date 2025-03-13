@@ -78,7 +78,7 @@ typedef union {
 
 typedef struct Token {
   int token;
-  SemInfo seminfo;
+  SemInfo seminfo; /* 语义信息 */
 } Token;
 
 /* 词法分析器的状态加上解析器的状态，当所有函数共享时 */

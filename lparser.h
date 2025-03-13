@@ -62,6 +62,12 @@ typedef enum {
 #define vkisvar(k) (VLOCAL <= (k) && (k) <= VINDEXSTR)
 #define vkisindexed(k) (VINDEXED <= (k) && (k) <= VINDEXSTR)
 
+/**
+ * 表达式描述
+ * 
+ * 
+ * 
+ */
 typedef struct expdesc {
   expkind k;
   union {

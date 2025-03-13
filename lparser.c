@@ -687,7 +687,7 @@ static void close_func(LexState *ls) {
   lua_State *L = ls->L;
   FuncState *fs = ls->fs;
   Proto *f = fs->f;
-  luaK_ret(fs, luaY_nvarstack(fs), 0); /* final return */
+  luaK_ret(fs, luaY_nvarstack(fs), 0); /* 最终返回 */
   leaveblock(fs);
   lua_assert(fs->bl == NULL);
   luaK_finish(fs);
@@ -704,13 +704,13 @@ static void close_func(LexState *ls) {
 }
 
 /*============================================================*/
-/* GRAMMAR RULES */
+/* 语法规则 */
 /*============================================================*/
 
 /*
-** check whether current token is in the follow set of a block.
-** 'until' closes syntactical blocks, but do not close scope,
-** so it is handled in separate.
+** 检查当前token是否在块的跟随集中。
+** 'until' 关闭语法块，但不会关闭作用域，
+** 所以它在单独处理。
 */
 static int block_follow(LexState *ls, int withuntil) {
   switch (ls->t.token) {
@@ -731,7 +731,7 @@ static void statlist(LexState *ls) {
   while (!block_follow(ls, 1)) {
     if (ls->t.token == TK_RETURN) {
       statement(ls);
-      return; /* 'return' must be last statement */
+      return; /* 'return' 必须是最后一个语句 */
     }
     statement(ls);
   }
@@ -972,7 +972,7 @@ static void funcargs(LexState *ls, expdesc *f) {
     if (args.k != VVOID) luaK_exp2nextreg(fs, &args); /* close last argument */
     nparams = fs->freereg - (base + 1);
   }
-  init_exp(f, VCALL, luaK_codeABC(fs, OP_CALL, base, nparams + 1, 2));
+  init_exp(f, VCALL, luaK_codeABC(fs, OP_CALL, base, nparams + 1, 2)); /* 初始化表达式 */
   luaK_fixline(fs, line);
   fs->freereg = base + 1; /* call removes function and arguments and leaves
                              one result (unless changed later) */
@@ -1005,6 +1005,7 @@ static void primaryexp(LexState *ls, expdesc *v) {
   }
 }
 
+// 后缀表达式
 static void suffixedexp(LexState *ls, expdesc *v) {
   /* suffixedexp ->
        primaryexp { '.' NAME | '[' exp ']' | ':' NAME funcargs | funcargs } */
@@ -1239,8 +1240,7 @@ static void block(LexState *ls) {
 }
 
 /*
-** structure to chain all variables in the left-hand side of an
-** assignment
+** 用于存储所有在赋值左侧的变量
 */
 struct LHS_assign {
   struct LHS_assign *prev;
@@ -1290,8 +1290,7 @@ static void check_conflict(LexState *ls, struct LHS_assign *lh, expdesc *v) {
 }
 
 /*
-** Parse and compile a multiple assignment. The first "variable"
-** (a 'suffixedexp') was already read by the caller.
+** 解析和编译多重赋值。第一个“变量”（一个'suffixedexp'）已经由调用者读取。
 **
 ** assignment -> suffixedexp restassign
 ** restassign -> ',' suffixedexp restassign | '=' explist
@@ -1315,9 +1314,9 @@ static void restassign(LexState *ls, struct LHS_assign *lh, int nvars) {
     if (nexps != nvars)
       adjust_assign(ls, nvars, nexps, &e);
     else {
-      luaK_setoneret(ls->fs, &e); /* close last expression */
-      luaK_storevar(ls->fs, &lh->v, &e);
-      return; /* avoid default */
+      luaK_setoneret(ls->fs, &e); /* 设置最后一个表达式 */
+      luaK_storevar(ls->fs, &lh->v, &e); /* 存储变量 */
+      return; /* 避免默认 */
     }
   }
   init_exp(&e, VNONRELOC, ls->fs->freereg - 1); /* default assignment */
@@ -1693,6 +1692,7 @@ static void funcstat(LexState *ls, int line) {
   luaK_fixline(ls->fs, line); /* definition "happens" in the first line */
 }
 
+// 表达式语句
 static void exprstat(LexState *ls) {
   /* stat -> func | assignment */
   FuncState *fs = ls->fs;
@@ -1700,7 +1700,7 @@ static void exprstat(LexState *ls) {
   suffixedexp(ls, &v.v);
   if (ls->t.token == '=' || ls->t.token == ',') { /* stat -> assignment ? */
     v.prev = NULL;
-    restassign(ls, &v, 1);
+    restassign(ls, &v, 1); /* 解析和编译多重赋值 */
   } else { /* stat -> func */
     Instruction *inst;
     check_condition(ls, v.v.k == VCALL, "syntax error");
@@ -1808,29 +1808,28 @@ static void statement(LexState *ls) {
   }
   lua_assert(ls->fs->f->maxstacksize >= ls->fs->freereg &&
              ls->fs->freereg >= luaY_nvarstack(ls->fs));
-  ls->fs->freereg = luaY_nvarstack(ls->fs); /* free registers */
+  ls->fs->freereg = luaY_nvarstack(ls->fs); /* 释放寄存器 */
   leavelevel(ls);
 }
 
 /* }====================================================================== */
 
 /*
-** compiles the main function, which is a regular vararg function with an
-** upvalue named LUA_ENV
+** 编译主函数，它是一个常规的可变参数函数，具有一个名为 LUA_ENV 的上值
 */
 static void mainfunc(LexState *ls, FuncState *fs) {
   BlockCnt bl;
   Upvaldesc *env;
   open_func(ls, fs, &bl);
   setvararg(fs, 0);       /* main function is always declared vararg */
-  env = allocupvalue(fs); /* ...set environment upvalue */
+  env = allocupvalue(fs); /* 设置环境上值 */
   env->instack = 1;
   env->idx = 0;
   env->kind = VDKREG;
   env->name = ls->envn;
   luaC_objbarrier(ls->L, fs->f, env->name);
-  luaX_next(ls); /* read first token */
-  statlist(ls);  /* parse main body */
+  luaX_next(ls); /* 读取第一个标记 */
+  statlist(ls);  /* 解析主函数体 */
   check(ls, TK_EOS);
   close_func(ls);
 }

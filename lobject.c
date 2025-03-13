@@ -30,7 +30,7 @@
 
 
 /*
-** Computes ceil(log2(x))
+** 计算 x 的以 2 为底的对数，并向上取整
 */
 int luaO_ceillog2 (unsigned int x) {
   static const lu_byte log_2[256] = {  /* log_2[i] = ceil(log2(i - 1)) */

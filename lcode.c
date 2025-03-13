@@ -753,10 +753,10 @@ static void str2K (FuncState *fs, expdesc *e) {
 ** to be fixed.)
 */
 void luaK_setoneret (FuncState *fs, expdesc *e) {
-  if (e->k == VCALL) {  /* expression is an open function call? */
-    /* already returns 1 value */
+  if (e->k == VCALL) {  /* 表达式是一个开放的函数调用？ */
+    /* 已经返回1个值 */
     lua_assert(GETARG_C(getinstruction(fs, e)) == 2);
-    e->k = VNONRELOC;  /* result has fixed position */
+    e->k = VNONRELOC;  /* 结果有一个固定的位置 */
     e->u.info = GETARG_A(getinstruction(fs, e));
   }
   else if (e->k == VVARARG) {
@@ -1045,7 +1045,7 @@ static void codeABRK (FuncState *fs, OpCode o, int a, int b,
 
 
 /*
-** Generate code to store result of expression 'ex' into variable 'var'.
+** 生成代码将表达式 'ex' 的结果存储到变量 'var' 中
 */
 void luaK_storevar (FuncState *fs, expdesc *var, expdesc *ex) {
   switch (var->k) {
@@ -1077,7 +1077,7 @@ void luaK_storevar (FuncState *fs, expdesc *var, expdesc *ex) {
     }
     default: lua_assert(0);  /* invalid var kind to store */
   }
-  freeexp(fs, ex);
+  freeexp(fs, ex);  /* 释放表达式 */
 }
 
 
@@ -1631,8 +1631,7 @@ void luaK_prefix (FuncState *fs, UnOpr opr, expdesc *e, int line) {
 
 
 /*
-** Process 1st operand 'v' of binary operation 'op' before reading
-** 2nd operand.
+** 处理二元操作的第一个操作数 'v' 之前读取第二个操作数
 */
 void luaK_infix (FuncState *fs, BinOpr op, expdesc *v) {
   luaK_dischargevars(fs, v);

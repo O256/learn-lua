@@ -139,12 +139,12 @@ int luaD_rawrunprotected (lua_State *L, Pfunc f, void *ud) {
   l_uint32 oldnCcalls = L->nCcalls;
   struct lua_longjmp lj;
   lj.status = LUA_OK;
-  lj.previous = L->errorJmp;  /* chain new error handler */
+  lj.previous = L->errorJmp;  /* 链式新错误处理程序 */
   L->errorJmp = &lj;
   LUAI_TRY(L, &lj,
     (*f)(L, ud);
   );
-  L->errorJmp = lj.previous;  /* restore old error handler */
+  L->errorJmp = lj.previous;  /* 恢复旧错误处理程序 */
   L->nCcalls = oldnCcalls;
   return lj.status;
 }
@@ -526,7 +526,7 @@ l_sinline int precallC (lua_State *L, StkId func, int nresults,
     luaD_hook(L, LUA_HOOKCALL, -1, 1, narg);
   }
   lua_unlock(L);
-  n = (*f)(L);  /* do the actual call */
+  n = (*f)(L);  /* 执行实际调用 */
   lua_lock(L);
   api_checknelems(L, n);
   luaD_poscall(L, ci, n);
@@ -649,7 +649,7 @@ void luaD_call (lua_State *L, StkId func, int nResults) {
 
 
 /*
-** Similar to 'luaD_call', but does not allow yields during the call.
+** 类似于 'luaD_call'，但不会在调用期间产生
 */
 void luaD_callnoyield (lua_State *L, StkId func, int nResults) {
   ccall(L, func, nResults, nyci);
@@ -955,7 +955,7 @@ int luaD_pcall (lua_State *L, Pfunc func, void *u,
   ptrdiff_t old_errfunc = L->errfunc;
   L->errfunc = ef;
   status = luaD_rawrunprotected(L, func, u);
-  if (l_unlikely(status != LUA_OK)) {  /* an error occurred? */
+  if (l_unlikely(status != LUA_OK)) {  /* 发生错误？ */
     L->ci = old_ci;
     L->allowhook = old_allowhooks;
     status = luaD_closeprotected(L, old_top, status);

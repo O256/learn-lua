@@ -130,7 +130,7 @@ static int report (lua_State *L, int status) {
 
 
 /*
-** Message handler used to run all chunks
+** 用于运行所有块的消息处理程序
 */
 static int msghandler (lua_State *L) {
   const char *msg = lua_tostring(L, 1);
@@ -153,14 +153,14 @@ static int msghandler (lua_State *L) {
 */
 static int docall (lua_State *L, int narg, int nres) {
   int status;
-  int base = lua_gettop(L) - narg;  /* function index */
-  lua_pushcfunction(L, msghandler);  /* push message handler */
-  lua_insert(L, base);  /* put it under function and args */
-  globalL = L;  /* to be available to 'laction' */
-  setsignal(SIGINT, laction);  /* set C-signal handler */
+  int base = lua_gettop(L) - narg;  /* 函数索引 */
+  lua_pushcfunction(L, msghandler);  /* 推入消息处理程序 */
+  lua_insert(L, base);  /* 将其放在函数和参数之下 */
+  globalL = L;  /* 可供 'laction' 使用 */
+  setsignal(SIGINT, laction);  /* 设置 C-信号处理程序 */
   status = lua_pcall(L, narg, nres, base);
-  setsignal(SIGINT, SIG_DFL); /* reset C-signal handler */
-  lua_remove(L, base);  /* remove message handler from the stack */
+  setsignal(SIGINT, SIG_DFL); /* 重置 C-信号处理程序 */
+  lua_remove(L, base);  /* 从堆栈中删除消息处理程序 */
   return status;
 }
 
@@ -649,11 +649,11 @@ static int pmain (lua_State *L) {
   }
   if (!runargs(L, argv, optlim))  /* execute arguments -e and -l */
     return 0;  /* something failed */
-  if (script > 0) {  /* execute main script (if there is one) */
-    if (handle_script(L, argv + script) != LUA_OK)
-      return 0;  /* interrupt in case of error */
+  if (script > 0) {  /* 执行主脚本（如果有） */
+    if (handle_script(L, argv + script) != LUA_OK)  /* 在发生错误时中断 */
+      return 0;  /* 中断 */
   }
-  if (args & has_i)  /* -i option? */
+  if (args & has_i)  /* -i 选项？ */
     doREPL(L);  /* do read-eval-print loop */
   else if (script < 1 && !(args & (has_e | has_v))) { /* no active option? */
     if (lua_stdin_is_tty()) {  /* running in interactive mode? */
